@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eventos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
+    <style>
+        #timeline {
+            height: 600px;
+        }
+        #evento-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .legend {
+            margin-bottom: 20px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+        .sala-community-lounge {
+            background-color: #d62728; /* Cor para Sala Community Lounge */
+        }
+        .palco-1 {
+            background-color: #1f77b4; /* Cor para Palco 1 */
+        }
+        .palco-2 {
+            background-color: #ff7f0e; /* Cor para Palco 2 */
+        }
+        .palco-3 {
+            background-color: #2ca02c; /* Cor para Palco 3 */
+        }
+        .sala-workshop-1 {
+            background-color: #9467bd; /* Cor para Sala Workshop 1 */
+        }
+        .sala-workshop-2 {
+            background-color: #8c564b; /* Cor para Sala Workshop 2 */
+        }
+        .participar {
+            font-weight: bold; /* Texto em negrito para participantes */
+              color: #fff;
+  text-shadow:
+    0 0 7px #fff,
+    0 0 10px #fff,
+    0 0 21px #fff,
+    0 0 42px #0fa,
+    0 0 82px #0fa,
+    0 0 92px #0fa,
+    0 0 102px #0fa,
+    0 0 151px #0fa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-center mb-4">Eventos</h2>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #1f77b4;"></div>
+            Palco 1
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ff7f0e;"></div>
+            Palco 2
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #2ca02c;"></div>
+            Palco 3
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #d62728;"></div>
+            Sala Community Lounge
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #9467bd;"></div>
+            Sala Workshop 1
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #8c564b;"></div>
+            Sala Workshop 2
+        </div>
+    </div>
+
+    <div id="evento-info"></div>
+
+    <div id="timeline"></div>
+    <!-- Tabela dos eventos em que pretende participar -->
+    <h3 class="text-center mt-5">Eventos em que Pretende Participar</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Hora de Início</th>
+                <th>Local</th>
+                <th>Nome do Evento</th>
+                <th>Hora de Fim</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}
+            {% if evento[6] == 1 %}
+            <tr>
+                <td>{{ evento[3] }}</td>
+                <td>{{ evento[5] }}</td>
+                <td>{{ evento[1] }}</td>
+                <td>{{ evento[4] }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var container = document.getElementById('timeline');
+        var eventoInfo = document.getElementById('evento-info');
+
+        // Dados dos eventos vindo da base de dados
+        var eventos = [
+            {% for evento in eventos %}
+            {
+                id: {{ evento[0] }},
+                content: '{{ evento[1] }}',
+                start: '{{ evento[3] }}', // Hora de início
+                end: '{{ evento[4] }}', // Hora de fim
+                className: '{{ evento[5].lower().replace(" ", "-") }}{% if evento[6] == 1 %} participar{% endif %}' // Classe para estilo do evento
+            },
+            {% endfor %}
+        ];
+
+        var options = {
+            // Defina as opções conforme necessário
+        };
+
+        var timeline = new vis.Timeline(container, eventos, options);
+
+        // Adiciona evento de clique para exibir o nome completo do evento
+        timeline.on('click', function(properties) {
+            var itemId = timeline.getSelection();
+            if (itemId.length > 0) {
+                var evento = eventos.find(item => item.id === itemId[0]);
+                eventoInfo.textContent = evento.content;
+            } else {
+                eventoInfo.textContent = '';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
