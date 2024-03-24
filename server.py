@@ -63,4 +63,9 @@ def eventos():
     return render_template('eventos.html', eventos=eventos)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Defina o endereço e a porta desejados
+    endereco = '0.0.0.0'  # Para tornar o servidor acessível em todas as interfaces de rede
+    porta = 10000  # Porta padrão do Flask
+    
+    # Inicie o aplicativo Flask
+    app.run(host=endereco, port=porta, debug=True)
